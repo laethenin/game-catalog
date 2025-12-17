@@ -1,19 +1,9 @@
 <?php
-$games = $featuredGames ?? [];
-$total = $total ?? 0;
-?>
+$allGames = $games ?? []; 
+?> 
 
-<h1>GameCatalog</h1>
-<p class="sub">Home — featuring <?= count($games) ?> games.</p>
-
-<section class="card">
-    <div class="meta">
-        <span class="badge">Total: <?= (int)$total ?></span>
-        <span class="badge">Featured: <?= count($games) ?></span>
-    </div>
-</section>
-
-<?php foreach ($games as $game): ?>
+<h1>Games triés par note</h1>
+<?php foreach ($allGames as $game): ?>
     <article class="card">
         <h2 class="card__title"><?= $game['title'] ?></h2>
 
@@ -28,4 +18,4 @@ $total = $total ?? 0;
             Détails du jeu
         </a>
     </article>
-<?php endforeach; ?>
+<?php endforeach; ?> 
