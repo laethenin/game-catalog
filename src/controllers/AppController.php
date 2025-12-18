@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../helpers/games.php';
+require_once __DIR__ . '/../services/games.php';
 require_once __DIR__ . '/../helpers/debug.php';
 
 final class AppController
 {
-    public function handleRequest() {
+    public function handleRequest(): void {
         $page = $_GET['page'] ?? 'home';
 
         switch ($page) {
@@ -31,27 +31,22 @@ final class AppController
          require __DIR__ . '/../../views/partials/footer.php';
     }
 
-    private function home() {
+    private function home(): void {
         // Récupérer tous les jeux
-        $games = getAllGames();
-        $featuredGames = array_slice($games, 0, 3);
+        $games = getLimitedGames(3);
 
         http_response_code(200);
 
         // rendre la vue avec les jeux
         $this->render('home', [
-            'featuredGames' => $featuredGames,
-            'total' => count($games)
+            'featuredGames' => $games,
+            'total' => countAll()
         ]);
     }
     
-    private function games() {
+    private function games(): void {
         // Récupérer tous les jeux
-        $games = getAllGames();
-
-        usort($games, function ($a, $b) {
-            return $b['rating'] <=> $a['rating'];
-        });
+        $games = getAllGamesSortedByRating();
 
         http_response_code(200);
 
@@ -61,8 +56,8 @@ final class AppController
         ]);
     }
 
-    private function gameById() {
-         $id = (int)($_GET['id'] ?? 0); 
+    private function gameById(): void {
+         $id = (int)($_GET['id'] ?? 0);
          $game = getGameById($id);
 
          http_response_code(200);
@@ -73,7 +68,7 @@ final class AppController
          ]);
     }
 
-    private function notFound() {
+    private function notFound(): void {
         http_response_code(404);
         $this->render('not-found', []);
     }
