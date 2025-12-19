@@ -14,7 +14,7 @@ $allGames = $games ?? [];
             <span class="badge"><?= (int)$game['rating'] ?>/10</span>
         </div>
 
-        <a href="/?page=detail&id=<?= $game['id'] ?>" class="btn">
+        <a href="/games/<?= (int)$game['id'] ?>" class="btn">
             Détails du jeu
         </a>
     </article>
