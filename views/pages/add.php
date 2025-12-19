@@ -7,37 +7,37 @@ $errors = $errors ?? [];
 <form method="POST" action="/add" class="form">
     <div class="field">
         <label for="title">Title</label>
-        <input type="text" name="title">
+        <label><input type="text" name="title"></label>
         <?php if (!empty($errors['title'])): ?><small><?= $errors['title'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="platform">Platform</label>
-        <input type="text" name="platform">
+        <label><input type="text" name="platform"></label>
         <?php if (!empty($errors['platform'])): ?><small><?= $errors['platform'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="genre">Genre</label>
-        <input type="text" name="genre">
+        <label><input type="text" name="genre"></label>
         <?php if (!empty($errors['genre'])): ?><small><?= $errors['genre'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="releaseYear">Release Year</label>
-        <input type="number" name="releaseYear">
+        <label><input type="number" name="releaseYear"></label>
         <?php if (!empty($errors['releaseYear'])): ?><small><?= $errors['releaseYear'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="rating">Rating</label>
-        <input type="number" name="rating">
+        <label><input type="number" name="rating"></label>
         <?php if (!empty($errors['rating'])): ?><small><?= $errors['rating'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="description">Description</label>
-        <input type="text" name="description">
+        <label><input type="text" name="description"></label>
         <?php if (!empty($errors['description'])): ?><small><?= $errors['description'] ?></small><?php endif; ?>
     </div>
     <div class="field">
         <label for="notes">Notes</label>
-        <input type="text" name="notes">
+        <label><input type="text" name="notes"></label>
         <?php if (!empty($errors['notes'])): ?><small><?= $errors['notes'] ?></small><?php endif; ?>
     </div>
 
