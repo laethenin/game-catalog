@@ -28,3 +28,12 @@ function countAll(): int {
 function getGameById(int $id): array | false {
     return gameRepository()->findById($id);
 }
+
+function getRandom(): array {
+    return gameRepository()->findRandom();
+}
+
+function createGame(array $data): int {
+    return gameRepository()->createGame($data);
+}
+

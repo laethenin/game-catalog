@@ -13,6 +13,10 @@ $total = $total ?? 0;
     </div>
 </section>
 
+    <a href="/random" class="btn">
+        Random Game
+    </a>
+
 <?php foreach ($games as $game): ?>
     <article class="card">
         <h2 class="card__title"><?= $game['title'] ?></h2>
