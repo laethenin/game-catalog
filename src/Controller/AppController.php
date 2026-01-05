@@ -1,10 +1,21 @@
 <?php
 
-require_once __DIR__ . '/../services/games.php';
-require_once __DIR__ . '/../helpers/debug.php';
+namespace Controller;
 
-final class AppController
+use JetBrains\PhpStorm\NoReturn;
+use Core\Response;
+use Repository\GamesRepository;
+
+require_once __DIR__ . '/../Helper/Debug.php';
+
+final readonly class AppController
 {
+    public function __construct(
+        private Response $response,
+        private GamesRepository $gamesRepository) {
+
+    }
+
     public function handleRequest(string $path): void {
         if (preg_match('#^/games/(\d+)$#', $path, $m)) {
             $this->gameById((int)$m[1]);
@@ -30,54 +41,47 @@ final class AppController
         }
     }
 
-    private function render(string $view, array $data = [], int $status = 200): void {
-         http_response_code($status);
-         extract($data);
-         require __DIR__ . '/../../views/partials/header.php';
-         require __DIR__ . '/../../views/pages/' . $view . '.php'; 
-         require __DIR__ . '/../../views/partials/footer.php';
-    }
-
     private function home(): void {
         // Récupérer tous les jeux
-        $games = getLimitedGames(3);
+        $games = $this->gamesRepository->findTop(3);
 
         // rendre la vue avec les jeux
-        $this->render('home', [
+        $this->response->render('home', [
             'featuredGames' => $games,
-            'total' => countAll()
+            'total' => $this->gamesRepository->countAll()
         ]);
     }
     
     private function games(): void {
         // Récupérer tous les jeux
-        $games = getAllGamesSortedByRating();
+        $games = $this->gamesRepository->findAllSortedByRating();
 
         // rendre la vue avec les jeux
-        $this->render('games', [
+        $this->response->render('games', [
             'games' => $games
         ]);
     }
 
     private function gameById(int $id): void {
-         $game = getGameById($id);
+         $game = $this->gamesRepository->findById($id);
 
          $success = $_SESSION['flash_success'] ?? null;
          unset($_SESSION['flash_success']);
 
-         $this->render('detail', [
+         $this->response->render('detail', [
             'id' => $id,
             'game' => $game,
              'success' => $success
          ]);
     }
 
+    #[NoReturn]
     private function random(): void {
         $lastId = $_SESSION['last_random_id'] ?? 0;
         $game = null;
 
         for($i = 0; $i < 5; $i++) {
-            $candidate = getRandom();
+            $candidate = $this->gamesRepository->findRandom();
 
             if($candidate['id'] !== $lastId) {
                 $game = $candidate;
@@ -87,8 +91,7 @@ final class AppController
         $id = $game['id'];
         $_SESSION['last_random_id'] = $id;
 
-        header('Location: /games/' . $id, true, 302);
-        exit;
+        $this->response->redirect('/games/' . $id);
     }
 
     private function add(): void {
@@ -96,7 +99,7 @@ final class AppController
             $this->handleAddGame();
             return;
         }
-        $this->render('add');
+        $this->response->render('add');
     }
 
     private function handleAddGame(): void {
@@ -129,19 +132,18 @@ final class AppController
             ];
 
         if (!empty($errors)) {
-            $this->render('add', ['old' => $old, 'errors' => $errors], 422);
+            $this->response->render('add', ['old' => $old, 'errors' => $errors], 422);
             return;
         }
 
-        $newGameId = createGame($old);
+        $newGameId = $this->gamesRepository->createGame($old);
         $_SESSION['flash_success'] = 'Game added successfully';
 
-        header('Location: /games/' . $newGameId, true, 302);
-        exit;
+        $this->response->redirect('/games/' . $newGameId);
     }
 
     private function notFound(): void {
-        $this->render('not-found', [], 404);
+        $this->response->render('not-found', [], 404);
     }
     
 }
