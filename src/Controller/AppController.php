@@ -2,6 +2,9 @@
 
 namespace Controller;
 
+use Core\Request;
+use Core\Session;
+use Helper\Debug;
 use JetBrains\PhpStorm\NoReturn;
 use Core\Response;
 use Repository\GamesRepository;
@@ -12,11 +15,11 @@ final readonly class AppController
 {
     public function __construct(
         private Response $response,
-        private GamesRepository $gamesRepository) {
+        private GamesRepository $gamesRepository,
+        private Session $session,
+        private Request $request) {}
 
-    }
-
-    public function handleRequest(string $path): void {
+    /*public function handleRequest(string $path): void {
         if (preg_match('#^/games/(\d+)$#', $path, $m)) {
             $this->gameById((int)$m[1]);
             return;
@@ -39,11 +42,12 @@ final readonly class AppController
                 $this->notFound();
                 break;
         }
-    }
+    }*/
 
-    private function home(): void {
+    public function home(): void {
         // Récupérer tous les jeux
         $games = $this->gamesRepository->findTop(3);
+        //Debug::dump_block('Method', $this->request->method());
 
         // rendre la vue avec les jeux
         $this->response->render('home', [
@@ -52,7 +56,7 @@ final readonly class AppController
         ]);
     }
     
-    private function games(): void {
+    public function games(): void {
         // Récupérer tous les jeux
         $games = $this->gamesRepository->findAllSortedByRating();
 
@@ -62,11 +66,11 @@ final readonly class AppController
         ]);
     }
 
-    private function gameById(int $id): void {
+    public function gameById(int $id): void {
          $game = $this->gamesRepository->findById($id);
+         //Debug::dump_block('$_SESSION', $_SESSION);
 
-         $success = $_SESSION['flash_success'] ?? null;
-         unset($_SESSION['flash_success']);
+         $success = $this->session->pullFlash('success');
 
          $this->response->render('detail', [
             'id' => $id,
@@ -76,8 +80,8 @@ final readonly class AppController
     }
 
     #[NoReturn]
-    private function random(): void {
-        $lastId = $_SESSION['last_random_id'] ?? 0;
+    public function random(): void {
+        $lastId = $this->session->get('last_random_id') ?? null;
         $game = null;
 
         for($i = 0; $i < 5; $i++) {
@@ -89,27 +93,27 @@ final readonly class AppController
         }
 
         $id = $game['id'];
-        $_SESSION['last_random_id'] = $id;
+        $this->session->set('last_random_id', $id);
 
         $this->response->redirect('/games/' . $id);
     }
 
-    private function add(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    public function add(): void {
+        if ($this->request->isPost()) {
             $this->handleAddGame();
             return;
         }
         $this->response->render('add');
     }
 
-    private function handleAddGame(): void {
-        $title = trim($_POST['title']);
-        $platform = trim($_POST['platform']);
-        $genre = trim($_POST['genre']);
-        $releaseYear = (int)$_POST['releaseYear'];
-        $rating = (int)$_POST['rating'];
-        $description = trim($_POST['description']);
-        $notes = trim($_POST['notes']);
+    public function handleAddGame(): void {
+        $title = trim($this->request->post('title'));
+        $platform = trim($this->request->post('platform'));
+        $genre = trim($this->request->post('genre'));
+        $releaseYear = (int)($this->request->post('releaseYear'));
+        $rating = (int)($this->request->post('rating'));
+        $description = trim($this->request->post('description'));
+        $notes = trim($this->request->post('notes'));
 
         $errors = [];
 
@@ -137,12 +141,12 @@ final readonly class AppController
         }
 
         $newGameId = $this->gamesRepository->createGame($old);
-        $_SESSION['flash_success'] = 'Game added successfully';
+        $this->session->flash('success', 'Game added successfully');
 
         $this->response->redirect('/games/' . $newGameId);
     }
 
-    private function notFound(): void {
+    public function notFound(): void {
         $this->response->render('not-found', [], 404);
     }
     
