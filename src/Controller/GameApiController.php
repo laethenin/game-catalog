@@ -10,6 +10,8 @@ final readonly class GameApiController
         private GamesRepository $gamesRepository
     ) {}
 
+    // peut-être qu'ici on pouvait faire appel à la fonction json créée dans Response pour simplifier les fonctions ?//
+
     public function top(): void
     {
         $games = $this->gamesRepository->findTopRated(5);

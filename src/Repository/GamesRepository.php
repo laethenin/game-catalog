@@ -56,6 +56,8 @@ readonly final class GamesRepository {
         return $this->pdo->lastInsertId();
     }
 
+    // Les 3 nouvelles fonctions pour le TP FullStack
+
     public function findTopRated(int $limit): array
     {
         $sql = $this->pdo->prepare("SELECT * FROM games ORDER BY rating DESC LIMIT :limit");

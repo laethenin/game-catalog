@@ -19,6 +19,8 @@ return function(Router $router, AppController $controller, PingApiController $pi
 
     $router->get('/api/ping', [$pingApiController, 'ping']);
 
+    // Routes pour GameApi
+
     $router->get('/api/games/top', function (Request $req, Response $res) use ($gameApiController) {
         $gameApiController->top();
     });

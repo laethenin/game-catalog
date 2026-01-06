@@ -28,7 +28,9 @@ $repository = new GamesRepository(Database::makePDO($config['db']));
 
 $appController = new AppController($response, $repository, $session, $request);
 $pingApiController = new PingApiController();
-$gameApiController = new GameApiController($repository);
+$gameApiController = new GameApiController($repository); // ici j'ai mis $repository car la correction de l'IDE
+//demandait un argument et proposait $gamesRepository mais pour moi $repository est équivalent car il crée un nouvel
+//objet GamesRepository. Je n'ai pas d'erreur mais je ne suis pas sur à 100% du choix
 
 $registerRoutes = require __DIR__ . '/../config/routes.php';
 $registerRoutes($router, $appController, $pingApiController, $gameApiController);
