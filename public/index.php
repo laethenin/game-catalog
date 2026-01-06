@@ -1,6 +1,7 @@
 <?php
 
 use Controller\AppController;
+use Controller\GameApiController;
 use Controller\PingApiController;
 use Core\Cors;
 use Core\Database;
@@ -13,7 +14,6 @@ use Repository\GamesRepository;
 session_start();
 require __DIR__ . '/../autoload.php';
 
-
 $config = require_once __DIR__ . '/../config/db.php';
 
 Cors::handle();
@@ -23,14 +23,15 @@ Cors::handle();
 $response = new Response();
 $session = new Session();
 $request = new Request();
+$router = new Router();
 $repository = new GamesRepository(Database::makePDO($config['db']));
 
 $appController = new AppController($response, $repository, $session, $request);
 $pingApiController = new PingApiController();
+$gameApiController = new GameApiController($repository);
 
-$router = new Router();
 $registerRoutes = require __DIR__ . '/../config/routes.php';
-$registerRoutes($router, $appController, $pingApiController);
+$registerRoutes($router, $appController, $pingApiController, $gameApiController);
 $router->dispatch($request, $response);
 
 //$appController->handleRequest($path);

@@ -6,7 +6,7 @@ final class Cors
 {
     public static function handle(): void {
         $allowedOrigin = 'http://localhost:4200';
-        $origin = $_SERVER['HTTP_ORIGIN'];
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
         if ($origin === $allowedOrigin) {
             header("Access-Control-Allow-Origin: $allowedOrigin");

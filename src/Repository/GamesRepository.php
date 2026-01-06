@@ -55,4 +55,28 @@ readonly final class GamesRepository {
 
         return $this->pdo->lastInsertId();
     }
+
+    public function findTopRated(int $limit): array
+    {
+        $sql = $this->pdo->prepare("SELECT * FROM games ORDER BY rating DESC LIMIT :limit");
+        $sql->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findMostRecent(int $limit): array
+    {
+        $sql = $this->pdo->prepare("SELECT * FROM games ORDER BY releaseYear DESC LIMIT :limit");
+        $sql->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countByRating(): array
+    {
+        $sql = $this->pdo->query("SELECT rating, COUNT(*) as total FROM games GROUP BY rating ORDER BY rating DESC");
+        return $sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }
